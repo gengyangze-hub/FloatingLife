@@ -199,6 +199,7 @@ PAGE_TPL = """<!DOCTYPE html>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title} — 浮生</title>
 <link rel="stylesheet" href="{base}style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
 </head>
 <body>
 <div id="reading-progress"></div>
@@ -219,6 +220,8 @@ PAGE_TPL = """<!DOCTYPE html>
 </main>
 {footer}
 <button id="back-to-top" title="回到顶部">&uarr;</button>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 <script src="{base}theme.js"></script>
 </body>
 </html>"""
@@ -342,6 +345,16 @@ THEME_JS = """(function() {
       els[i].style.left = (q.l[0] + Math.random() * (q.l[1] - q.l[0])) + '%';
     }
   })();
+
+  /* ── KaTeX 渲染 ── */
+  if (typeof renderMathInElement !== 'undefined') {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '$', right: '$', display: false},
+      ]
+    });
+  }
 })();"""
 
 HOME_NAV = ""
