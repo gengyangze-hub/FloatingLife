@@ -145,7 +145,7 @@ nav .sep{color:var(--muted)}
 @keyframes drift{0%{top:20%;left:46%}12%{top:17%;left:52%}25%{top:26%;left:49%}37%{top:18%;left:42%}50%{top:24%;left:50%}62%{top:15%;left:47%}75%{top:22%;left:51%}87%{top:19%;left:44%}100%{top:20%;left:46%}}
 @media(prefers-reduced-motion){.cursor-dot{animation:none}}
 .home-title{font-size:5rem;letter-spacing:.24em;font-weight:700;margin:0;line-height:1.1;position:relative;z-index:1;color:var(--muted)}
-.home-sub{font-size:.95rem;color:var(--muted);text-decoration:none;margin-top:.8rem;letter-spacing:.08em;transition:color .3s;position:relative;z-index:1}
+.home-sub{font-size:.95rem;color:var(--muted);text-decoration:none;margin-top:.8rem;margin-left:4.5rem;letter-spacing:.08em;transition:color .3s;position:relative;z-index:1}
 .home-sub:hover{color:var(--accent)}
 .home-nav{display:flex;gap:2.8rem;margin-top:3.2rem;position:relative;z-index:1}
 .home-nav a{font-size:1.05rem;color:var(--muted);text-decoration:none;letter-spacing:.12em;transition:color .3s}
