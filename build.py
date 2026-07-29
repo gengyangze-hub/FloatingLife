@@ -2,7 +2,9 @@
 浮生 — 静态站点生成器
 解析正文和设定集 Markdown 文件，生成完整静态站点到 docs/
 """
+import math
 import os
+import random
 import re
 import shutil
 from pathlib import Path
@@ -83,7 +85,7 @@ body{
   background:linear-gradient(135deg,var(--bg),var(--bg2));background-attachment:fixed;
   color:var(--text);
   min-height:100vh;display:flex;flex-direction:column;
-  -webkit-font-smoothing:antialiased;
+  -webkit-font-smoothing:antialiased;overflow-x:clip;
 }
 main{flex:1;max-width:var(--max-w);width:100%;margin:0 auto;padding:3rem 1.5rem}
 main{animation:fadeIn .4s ease-out}
@@ -148,6 +150,26 @@ nav .sep{color:var(--muted)}
 .home-nav{display:flex;gap:2.8rem;margin-top:3.2rem;position:relative;z-index:1}
 .home-nav a{font-size:1.05rem;color:var(--muted);text-decoration:none;letter-spacing:.12em;transition:color .3s}
 .home-nav a:hover{color:var(--accent)}
+
+/* ── 首页空岛景观（俯瞰线稿） ── */
+.sky-arch{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:min(100vw,138vh,1500px);aspect-ratio:3;z-index:0;pointer-events:none}
+.sky-arch path,.sky-arch circle{fill:none;stroke:var(--muted);stroke-width:1.1;stroke-linecap:round;stroke-linejoin:round}
+.sky-arch .far{opacity:.3}
+.sky-arch .mid{opacity:.5}
+.sky-arch .front{opacity:.85}
+.sky-arch .body,.sky-arch .top{fill:var(--bg)}
+.sky-arch .front .body,.sky-arch .front .top{stroke:var(--accent);stroke-width:1.4}
+.sky-arch .front .deco{stroke:var(--accent)}
+.sky-arch .stars circle{fill:var(--muted);stroke:none}
+.isl-a{animation:isl-a 17s ease-in-out infinite}
+.isl-b{animation:isl-b 23s ease-in-out infinite}
+.isl-c{animation:isl-c 14s ease-in-out infinite}
+@keyframes isl-a{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes isl-b{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+@keyframes isl-c{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@media(prefers-reduced-motion){.sky-arch .isl{animation:none}}
+@media(max-width:600px){.sky-arch{width:100vw;height:40vh;aspect-ratio:auto}}
+@media(min-width:768px){.sky-arch{left:calc(50% + 32px)}}
 
 /* ===== View Transition（主题切换圆盘扩散动画） ===== */
 ::view-transition-old(root){animation:none}
@@ -548,6 +570,91 @@ def write_page(rel_path, title, body, base='', *, rail_head='', rail_tail='', to
     )
 
 
+def _home_sky_svg():
+    """生成首页底部的空岛界线稿（高空俯瞰视角，可见上表面）。
+
+    每座空岛 = 边缘微扭曲的类椭圆上表面 + 下方岛身（尖底或平底）。
+    用固定种子的随机扰动让每座岛形态各异。
+    """
+    rng = random  # 不固定种子，每次构建形态略有不同
+
+    def blob(cx, cy, rx, ry, n=10):
+        """过 10 个 jitter 锚点的 Catmull-Rom → Cubic Bézier 闭合平滑曲线。返回 (path, 锚点列表)。"""
+        pts = []
+        for i in range(n):
+            a = 2 * math.pi * i / n
+            f = 1 + rng.uniform(-0.08, 0.08)
+            pts.append((cx + math.cos(a) * rx * f, cy + math.sin(a) * ry * f))
+        d_parts = []
+        for i in range(n):
+            p0 = pts[i]
+            p1 = pts[(i + 1) % n]
+            prev = pts[(i - 1) % n]
+            nxt = pts[(i + 2) % n]
+            # Catmull-Rom 切线 → 三次贝塞尔控制点
+            cp1 = (p0[0] + (p1[0] - prev[0]) / 6, p0[1] + (p1[1] - prev[1]) / 6)
+            cp2 = (p1[0] - (nxt[0] - p0[0]) / 6, p1[1] - (nxt[1] - p0[1]) / 6)
+            if i == 0:
+                d_parts.append(f'M{p0[0]:.0f},{p0[1]:.0f}')
+            d_parts.append(f'C{cp1[0]:.0f},{cp1[1]:.0f} {cp2[0]:.0f},{cp2[1]:.0f} {p1[0]:.0f},{p1[1]:.0f}')
+        return ' '.join(d_parts) + ' Z', pts
+
+    def island_body(cx, cy, rx, d, flat, lx, rx_):
+        """岛身：从上表面左右锚点垂下，尖底或平底。开放路径，填充时自动闭合成弦（被上表面遮住）"""
+        if flat:
+            return (f'M{lx:.0f},{cy} C{lx - 3:.0f},{cy + d * 0.4:.0f} {cx - rx * 0.85:.0f},{cy + d * 0.8:.0f} {cx - rx * 0.62:.0f},{cy + d:.0f}'
+                    f' C{cx - rx * 0.2:.0f},{cy + d * 1.1:.0f} {cx + rx * 0.3:.0f},{cy + d * 0.88:.0f} {cx + rx * 0.58:.0f},{cy + d * 0.94:.0f}'
+                    f' C{cx + rx * 0.82:.0f},{cy + d * 0.72:.0f} {rx_ + 3:.0f},{cy + d * 0.38:.0f} {rx_:.0f},{cy}')
+        tip = cx + rng.uniform(-0.15, 0.05) * rx
+        return (f'M{lx:.0f},{cy} C{lx - 2:.0f},{cy + d * 0.32:.0f} {cx - rx * 0.48:.0f},{cy + d * 0.66:.0f} {tip:.0f},{cy + d:.0f}'
+                f' C{cx + rx * 0.5:.0f},{cy + d * 0.62:.0f} {rx_ + 2:.0f},{cy + d * 0.3:.0f} {rx_:.0f},{cy}')
+
+    def trees(cx, cy, rx, ry):
+        spots = ((-0.28, -0.05), (0.22, 0.18))
+        trunks = ' '.join(f'M{cx + rx * fx:.0f},{cy + ry * fy:.0f} L{cx + rx * fx:.0f},{cy + ry * fy - 7:.0f}' for fx, fy in spots)
+        crowns = ''.join(f'<circle class="deco" cx="{cx + rx * fx:.0f}" cy="{cy + ry * fy - 9:.0f}" r="2.2"/>' for fx, fy in spots)
+        return f'<path class="deco" d="{trunks}"/>' + crowns
+
+    # (cx, cy, 半径rx, 岛身深度, 是否平底, 层, 浮动动画, 表面装饰)
+    ISLANDS = [
+        (150, 150, 46, 55, False, 'far', 'b', None),
+        (420, 105, 38, 48, True, 'far', 'a', None),
+        (700, 160, 52, 70, False, 'far', 'c', None),
+        (1010, 120, 42, 50, False, 'far', 'b', None),
+        (1300, 185, 48, 42, True, 'far', 'a', None),
+        (300, 260, 66, 85, False, 'mid', 'c', None),
+        (620, 305, 58, 60, True, 'mid', 'b', None),
+        (880, 265, 68, 110, False, 'mid', 'a', 'pond'),
+        (1180, 315, 62, 70, True, 'mid', 'c', None),
+        (480, 390, 92, 85, False, 'front', 'a', None),
+        (840, 395, 80, 70, True, 'front', 'c', None),
+        (1150, 390, 88, 88, False, 'front', 'b', None),
+    ]
+    layers = {'far': [], 'mid': [], 'front': []}
+    for cx, cy, rx, d, flat, layer, anim, deco in ISLANDS:
+        ry = rx * 0.38
+        top_d, pts = blob(cx, cy, rx, ry)
+        body_d = island_body(cx, cy, rx, d, flat, pts[5][0], pts[0][0])
+        parts = [f'<path class="body" d="{body_d}"/>', f'<path class="top" d="{top_d}"/>']
+        if deco == 'trees':
+            parts.append(trees(cx, cy, rx, ry))
+        elif deco == 'pond':
+            pond_d, _ = blob(cx + rx * 0.15, cy + ry * 0.1, rx * 0.28, ry * 0.32, n=7)
+            parts.append(f'<path class="deco" d="{pond_d}"/>')
+        layers[layer].append(f'<g class="isl isl-{anim}">' + ''.join(parts) + '</g>')
+
+    return ('<svg class="sky-arch" viewBox="0 0 1440 480" preserveAspectRatio="xMidYMax slice" aria-hidden="true">'
+            '<g class="far">'
+            '<g class="stars">'
+            '<circle cx="180" cy="48" r="1.6"/><circle cx="560" cy="36" r="1.3"/>'
+            '<circle cx="860" cy="66" r="1.5"/><circle cx="1020" cy="28" r="1.3"/>'
+            '<circle cx="1340" cy="104" r="1.4"/></g>'
+            + ''.join(layers['far']) + '</g>'
+            '<g class="mid">' + ''.join(layers['mid']) + '</g>'
+            '<g class="front">' + ''.join(layers['front']) + '</g>'
+            '</svg>')
+
+
 def build():
     DOCS.mkdir(exist_ok=True)
 
@@ -560,6 +667,7 @@ def build():
     settings = parse_settings()
 
     # 2. 首页 — 居中极简布局
+    sky = _home_sky_svg()
     body = f'''<div class="home-wrap">
   <div class="cursor-dot" aria-hidden="true"></div>
   <h1 class="home-title">{novel_title}</h1>
@@ -568,6 +676,7 @@ def build():
     <a href="chapters.html">正文</a>
     <a href="settings.html">设定集</a>
   </nav>
+  {sky}
 </div>'''
     write_page('index.html', '首页', body, base='',
                rail_head='', rail_tail=RAIL_TAIL_SPACER, footer='',
