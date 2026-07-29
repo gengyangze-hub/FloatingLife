@@ -27,36 +27,36 @@ CSS = r"""
   unicode-range: U+1F700-1F77F;
   font-display: swap;
 }
-/* ===== 浅色：摩卡×雾绿 ===== */
+/* ===== 浅色：晨雾 ===== */
 :root {
-  --bg: #efe8e0;
-  --bg2: #e0e7df;
-  --text: #473c32;
-  --muted: #a2937f;
-  --accent: #7e9081;
-  --chroma: #7e9081;
-  --chroma-dim: #a3b5a6;
-  --chroma-bg: rgba(126,144,129,.10);
-  --border: rgba(90,70,50,.14);
-  --card-bg: #faf6f0;
-  --hover: rgba(126,144,129,.12);
+  --bg: #fafaf9;
+  --bg2: #f2f2f0;
+  --text: #1c1c1a;
+  --muted: #8c8c88;
+  --accent: #6b8299;
+  --chroma: #6b8299;
+  --chroma-dim: #96a9ba;
+  --chroma-bg: rgba(107,130,153,.08);
+  --border: rgba(0,0,0,.06);
+  --card-bg: #fafaf9;
+  --hover: rgba(107,130,153,.08);
   --max-w: 720px;
-  --reading-bar: #7e9081;
+  --reading-bar: #6b8299;
 }
-/* ===== 深色：墨黑 ===== */
+/* ===== 深色：深水 ===== */
 [data-theme="dark"] {
-  --bg: #121214;
-  --bg2: #1c1c20;
-  --text: #e9e6e0;
-  --muted: #8f8a83;
-  --accent: #c9c0b1;
-  --chroma: #c9c0b1;
-  --chroma-dim: #a09888;
-  --chroma-bg: rgba(255,255,255,.05);
-  --border: rgba(255,255,255,.10);
-  --card-bg: #1c1c20;
-  --hover: rgba(255,255,255,.06);
-  --reading-bar: #c9c0b1;
+  --bg: #14181d;
+  --bg2: #1a1e24;
+  --text: #e8e6e1;
+  --muted: #7c828a;
+  --accent: #8ea4b8;
+  --chroma: #8ea4b8;
+  --chroma-dim: #6b8299;
+  --chroma-bg: rgba(142,164,184,.08);
+  --border: rgba(255,255,255,.06);
+  --card-bg: #1a1e24;
+  --hover: rgba(142,164,184,.08);
+  --reading-bar: #8ea4b8;
 }
 /* ===== 字体切换 ===== */
 :root { --reader-font: "Noto Serif SC","Source Han Serif SC","Songti SC","SimSun","宋体",serif; }
@@ -137,17 +137,17 @@ nav .sep{color:var(--muted)}
 .chapter-nav{display:flex;justify-content:space-between;margin:3rem 0 1rem;padding-top:2rem;border-top:1px solid var(--border)}
 .chapter-nav a{font-size:1rem;color:var(--chroma);transition:color .2s}
 .chapter-nav a:hover{color:var(--accent);text-decoration:none}
-.home-title{font-size:4.2rem;letter-spacing:.18em;font-weight:700;text-align:center;margin:5rem 0 0;line-height:1.2;color:var(--text)}
-.home-sub{text-align:center;color:var(--muted);font-size:.95rem;font-weight:400;letter-spacing:.06em;margin:.5rem 0 0;text-decoration:none;transition:color .2s}
+/* ── 首页：居中极简 ── */
+.home-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;text-align:center;position:relative}
+.cursor-dot{position:fixed;width:5px;height:5px;border-radius:50%;background:var(--accent);opacity:.25;pointer-events:none;z-index:0;filter:blur(1px);animation:drift 28s ease-in-out infinite}
+@keyframes drift{0%{top:20%;left:46%}12%{top:17%;left:52%}25%{top:26%;left:49%}37%{top:18%;left:42%}50%{top:24%;left:50%}62%{top:15%;left:47%}75%{top:22%;left:51%}87%{top:19%;left:44%}100%{top:20%;left:46%}}
+@media(prefers-reduced-motion){.cursor-dot{animation:none}}
+.home-title{font-size:5rem;letter-spacing:.24em;font-weight:700;margin:0;line-height:1.1;position:relative;z-index:1;color:var(--muted)}
+.home-sub{font-size:.95rem;color:var(--muted);text-decoration:none;margin-top:.8rem;letter-spacing:.08em;transition:color .3s;position:relative;z-index:1}
 .home-sub:hover{color:var(--accent)}
-/* 首页散落布局 */
-.home-scatter{position:relative;min-height:70vh;width:100%;overflow:hidden}
-.home-scatter .scatter-el{position:absolute;white-space:nowrap}
-.home-scatter .home-title{font-size:4.2rem;letter-spacing:.18em;font-weight:700;line-height:1.2;color:var(--text);margin:0;text-align:left}
-.home-scatter .home-sub{font-size:.95rem;font-weight:400;letter-spacing:.06em;color:var(--muted);text-decoration:none;margin:0;text-align:left}
-.scatter-btn{font-size:1.05rem;letter-spacing:.12em;color:var(--chroma);text-decoration:none;border-bottom:1px solid var(--chroma-dim);padding:.2rem 0;transition:color .2s,border-color .2s}
-.scatter-btn:hover{color:var(--accent);border-bottom-color:var(--accent)}
-.home-sub-desc{font-size:.9rem;color:var(--chroma-dim);margin-bottom:2.5rem;font-style:italic}
+.home-nav{display:flex;gap:2.8rem;margin-top:3.2rem;position:relative;z-index:1}
+.home-nav a{font-size:1.05rem;color:var(--muted);text-decoration:none;letter-spacing:.12em;transition:color .3s}
+.home-nav a:hover{color:var(--accent)}
 
 /* ===== View Transition（主题切换圆盘扩散动画） ===== */
 ::view-transition-old(root){animation:none}
@@ -182,7 +182,7 @@ nav .sep{color:var(--muted)}
 .rail-spacer{margin-top:auto}
 .home-fonts{justify-content:center;padding:.6rem 0 0}
 
-@media(max-width:600px){html{font-size:16px}main{padding:2rem 1rem}.home-scatter .home-title{font-size:2.5rem}.home-scatter .home-sub{font-size:.85rem}.scatter-btn{font-size:.95rem}.chapter-nav{flex-direction:column;align-items:center;gap:.5rem}}
+@media(max-width:600px){html{font-size:16px}main{padding:2rem 1rem}.home-title{font-size:3.2rem}.home-nav{gap:2rem}.chapter-nav{flex-direction:column;align-items:center;gap:.5rem}}
 @media(min-width:768px){
   #side-rail{display:flex}
   .top-bar,.home-fonts{display:none}
@@ -321,29 +321,6 @@ THEME_JS = """(function() {
     btn.addEventListener('click', function() {
       window.scrollTo({top: 0, behavior: 'smooth'});
     });
-  })();
-
-  /* ── 首页散落布局 ── */
-  (function() {
-    var scatter = document.getElementById('homeScatter');
-    if (!scatter) return;
-    var els = scatter.querySelectorAll('.scatter-el');
-    if (els.length !== 4) return;
-    var quads = [
-      { t: [5, 22],  l: [3, 38] },
-      { t: [5, 22],  l: [48, 88] },
-      { t: [42, 72], l: [3, 38] },
-      { t: [42, 72], l: [48, 88] },
-    ];
-    for (var i = quads.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var tmp = quads[i]; quads[i] = quads[j]; quads[j] = tmp;
-    }
-    for (var i = 0; i < els.length; i++) {
-      var q = quads[i];
-      els[i].style.top  = (q.t[0] + Math.random() * (q.t[1] - q.t[0])) + '%';
-      els[i].style.left = (q.l[0] + Math.random() * (q.l[1] - q.l[0])) + '%';
-    }
   })();
 
   /* ── KaTeX 渲染 ── */
@@ -582,16 +559,19 @@ def build():
     chapters, novel_title = parse_chapters()
     settings = parse_settings()
 
-    # 2. 首页 — 四元素散落布局
-    body = f'''<div class="home-scatter" id="homeScatter">
-  <h1 class="home-title scatter-el">{novel_title}</h1>
-  <a class="home-sub scatter-el" href="https://space.bilibili.com/1410666014" target="_blank" rel="noopener">——律</a>
-  <a href="chapters.html" class="scatter-btn scatter-el">正文</a>
-  <a href="settings.html" class="scatter-btn scatter-el">设定集</a>
+    # 2. 首页 — 居中极简布局
+    body = f'''<div class="home-wrap">
+  <div class="cursor-dot" aria-hidden="true"></div>
+  <h1 class="home-title">{novel_title}</h1>
+  <a class="home-sub" href="https://space.bilibili.com/1410666014" target="_blank" rel="noopener">——律</a>
+  <nav class="home-nav">
+    <a href="chapters.html">正文</a>
+    <a href="settings.html">设定集</a>
+  </nav>
 </div>'''
     write_page('index.html', '首页', body, base='',
                rail_head='', rail_tail=RAIL_TAIL_SPACER, footer='',
-               top_bar=f'<div class="font-row home-fonts">{_FONT_BTNS}</div>')
+               top_bar='')
 
     # 3. 章节目录页
     toc_items = []
