@@ -29,22 +29,30 @@ CSS = r"""
 }
 :root {
   --bg: #fff;
-  --text: #000;
-  --muted: #666;
+  --text: #1a1a1a;
+  --muted: #6b7280;
   --accent: #000;
-  --border: #ccc;
+  --chroma: #5b8c9e;
+  --chroma-dim: #8ab4c4;
+  --chroma-bg: #f0f5f7;
+  --border: #d1d5db;
   --card-bg: #fff;
-  --hover: #f2f2f2;
+  --hover: #f3f4f6;
   --max-w: 720px;
+  --reading-bar: #5b8c9e;
 }
 [data-theme="dark"] {
-  --bg: #000;
-  --text: #fff;
-  --muted: #999;
+  --bg: #0d1117;
+  --text: #e6edf3;
+  --muted: #7d8590;
   --accent: #fff;
-  --border: #333;
-  --card-bg: #000;
-  --hover: #1a1a1a;
+  --chroma: #8ab4c4;
+  --chroma-dim: #5b8c9e;
+  --chroma-bg: #161b22;
+  --border: #30363d;
+  --card-bg: #161b22;
+  --hover: #1c2128;
+  --reading-bar: #8ab4c4;
 }
 .theme-toggle {
   position: fixed;top:1rem;right:1rem;
@@ -52,57 +60,73 @@ CSS = r"""
   z-index:100;padding:.4rem;line-height:1;border-radius:8px;
   transition:transform .2s;color:var(--text);
 }
-.theme-toggle:hover{transform:scale(1.2)}
-.icon-sun{display:none}
-.icon-moon{display:block}
-[data-theme="dark"] .icon-sun{display:block}
-[data-theme="dark"] .icon-moon{display:none}
+.theme-toggle:hover{transform:scale(1.15);border-color:var(--chroma);color:var(--chroma)}
+#reading-progress{position:fixed;top:0;left:0;height:2px;background:var(--reading-bar);z-index:101;width:0;transition:width .1s linear;border-radius:0 1px 1px 0}
+#back-to-top{position:fixed;bottom:1.5rem;right:1.5rem;width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:var(--bg);color:var(--muted);cursor:pointer;z-index:99;display:flex;align-items:center;justify-content:center;font-size:1.2rem;transition:all .3s;opacity:0;pointer-events:none;transform:translateY(10px)}
+#back-to-top.visible{opacity:1;pointer-events:auto;transform:translateY(0)}
+#back-to-top:hover{color:var(--chroma);border-color:var(--chroma)}
+.icon-yinyang{font-size:1.3rem;line-height:1;display:inline-block;transition:transform .3s}
+.icon-yinyang .dot-bg{fill:var(--bg)}
+.theme-toggle:hover .icon-yinyang{transform:rotate(180deg)}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{font-size:17px;line-height:1.75}
+html{font-size:18px;line-height:1.8}
 body{
   font-family:"Noto Serif SC","Source Han Serif SC","Songti SC",Georgia,serif,"Noto Sans Runic","Noto Sans Symbols 2";
   background:var(--bg);color:var(--text);
   min-height:100vh;display:flex;flex-direction:column;
+  -webkit-font-smoothing:antialiased;
 }
 main{flex:1;max-width:var(--max-w);width:100%;margin:0 auto;padding:3rem 1.5rem}
-h1{font-size:2.2rem;text-align:center;margin:2rem 0 1.5rem;letter-spacing:.08em;font-weight:700}
-h2{font-size:1.5rem;margin:2rem 0 1rem;font-weight:600;color:var(--accent)}
-h3{font-size:1.2rem;margin:1.5rem 0 .75rem;font-weight:600}
-h4{font-size:1.05rem;margin:1.2rem 0 .6rem;font-weight:600}
-p{margin:0 0 1em;text-align:justify}
-a{color:var(--accent);text-decoration:none}
-a:hover{text-decoration:underline}
-code{font-family:"JetBrains Mono","Fira Code",monospace;font-size:.88rem;background:var(--hover);padding:.15em .35em;border-radius:4px}
+main{animation:fadeIn .4s ease-out}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+h1{font-size:2rem;text-align:center;margin:2.5rem 0 1.5rem;letter-spacing:.08em;font-weight:600}
+h2{font-size:1.4rem;margin:2rem 0 .8rem;font-weight:600;color:var(--accent)}
+h3{font-size:1.15rem;margin:1.5rem 0 .6rem;font-weight:500;color:var(--chroma)}
+h4{font-size:1.05rem;margin:1.2rem 0 .5rem;font-weight:500}
+p{margin:0 0 .8em;text-align:justify}
+.chapter-content p{text-indent:2em}
+a{color:var(--chroma);text-decoration:none;transition:color .2s}
+a:hover{color:var(--accent);text-decoration:underline}
+code{font-family:"JetBrains Mono","Fira Code",monospace;font-size:.85rem;background:var(--hover);padding:.15em .4em;border-radius:4px;border:1px solid var(--border);color:var(--chroma-dim)}
 pre{background:var(--hover);padding:1rem 1.2rem;border-radius:8px;overflow-x:auto;margin:1rem 0;border:1px solid var(--border)}
-pre code{background:none;padding:0;font-size:.82rem;line-height:1.6;white-space:pre-wrap;word-break:break-word}
-blockquote{border-left:3px solid var(--accent);padding:.5rem 1.2rem;margin:1rem 0;color:var(--muted);font-style:italic}
+pre code{background:none;padding:0;font-size:.82rem;line-height:1.6;white-space:pre-wrap;word-break:break-word;border:none;color:inherit}
+blockquote{border-left:3px solid var(--chroma);padding:.8rem 1.5rem;margin:1.2rem 0;color:var(--muted);font-style:normal;background:var(--chroma-bg);border-radius:0 6px 6px 0}
 ul,ol{margin:.5rem 0 1rem 1.5rem}
 li{margin:.3rem 0}
-hr{border:none;border-top:1px solid var(--border);margin:2.5rem 0}
+hr{border:none;text-align:center;margin:2.5rem 0;overflow:visible}
+hr::after{content:'~  ~  ~';color:var(--chroma-dim);font-size:1rem;letter-spacing:.3em;font-family:serif}
+table{border-collapse:collapse;width:100%;margin:1.2rem 0;font-size:.95rem}
+th,td{border:1px solid var(--border);padding:.5rem .8rem;text-align:left}
+th{background:var(--hover);font-weight:600}
+tr:nth-child(even){background:var(--chroma-bg)}
 nav{display:flex;align-items:center;gap:1rem;margin-bottom:2rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
 nav a{font-size:.95rem}
 nav .sep{color:var(--muted)}
 .btn-group{display:flex;gap:1.5rem;justify-content:center;margin:3rem 0}
 .btn{
   display:inline-block;padding:.85rem 0;font-size:1.15rem;width:10rem;
-  border:2px solid var(--accent);border-radius:8px;color:var(--accent);
+  border:2px solid var(--chroma);border-radius:8px;color:var(--chroma);
   background:transparent;cursor:pointer;transition:all .2s;
   text-align:center;font-family:inherit;
 }
-.btn:hover{background:var(--accent);color:var(--bg);text-decoration:none}
-.btn.primary{background:var(--accent);color:var(--bg)}
+.btn:hover{background:var(--chroma);color:#fff;text-decoration:none}
+.btn.primary{background:var(--chroma);border-color:var(--chroma);color:#fff}
 .btn.primary:hover{opacity:.85}
 .toc-list{list-style:none;margin:0;padding:0}
 .toc-list li{border-bottom:1px solid var(--border)}
-.toc-list a{display:block;padding:.9rem 1rem;font-size:1.1rem;transition:background .15s;border-radius:6px}
-.toc-list a:hover{background:var(--hover);text-decoration:none}
+.toc-list a{display:block;padding:.9rem 1rem;font-size:1.1rem;transition:all .15s;border-radius:6px;color:var(--chroma)}
+.toc-list a:hover{background:var(--chroma-bg);text-decoration:none;padding-left:1.3rem}
 .toc-num{display:inline-block;width:2.5rem;color:var(--muted);font-size:.9rem}
-.footer{text-align:center;color:var(--muted);font-size:.85rem;padding:2rem 0;border-top:1px solid var(--border);margin-top:3rem}
+.footer{text-align:center;color:var(--muted);font-size:.82rem;padding:2.5rem 0;border-top:1px solid var(--border);margin-top:3rem}
+.footer p{margin:0}
 .chapter-content h2{margin-top:0}
 .chapter-nav{display:flex;justify-content:space-between;margin:3rem 0 1rem;padding-top:2rem;border-top:1px solid var(--border)}
-.chapter-nav a{font-size:1rem}
-.home-title{font-size:4rem;letter-spacing:.15em;font-weight:900;text-align:center;margin:6rem 0 1rem}
-.home-sub{text-align:center;color:var(--muted);font-size:1.1rem;margin-bottom:2rem}
+.chapter-nav a{font-size:1rem;color:var(--chroma);transition:color .2s}
+.chapter-nav a:hover{color:var(--accent);text-decoration:none}
+.home-title{font-size:4rem;letter-spacing:.15em;font-weight:900;text-align:center;margin:6rem 0 1rem;position:relative;left:-.5em}
+.home-sub{text-align:center;color:var(--muted);font-size:1.05rem;margin-bottom:.5rem;position:relative;left:1.5em}
+.home-sub-desc{font-size:.9rem;color:var(--chroma-dim);margin-bottom:2.5rem;font-style:italic}
+@media(max-width:600px){html{font-size:16px}main{padding:2rem 1rem}.home-title{font-size:2.5rem;margin:3rem 0 1rem}.btn{width:8rem;font-size:1rem}.btn-group{gap:1rem}.chapter-nav{flex-direction:column;align-items:center;gap:.5rem}}
 """
 
 PAGE_TPL = """<!DOCTYPE html>
@@ -114,14 +138,18 @@ PAGE_TPL = """<!DOCTYPE html>
 <link rel="stylesheet" href="{base}style.css">
 </head>
 <body>
+<div id="reading-progress"></div>
 <button class="theme-toggle" id="themeToggle" title="切换亮色/暗色模式">
-<svg class="icon-sun" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-<svg class="icon-moon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+<svg class="icon-yinyang" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="11"/><path d="M12 1 A11 11 0 0 0 12 23 A5.5 5.5 0 0 1 12 12 A5.5 5.5 0 0 0 12 1" fill="currentColor" stroke="none"/><circle cx="12" cy="6.5" r="2.2" class="dot-bg" stroke="none"/><circle cx="12" cy="17.5" r="2.2" fill="currentColor" stroke="none"/></svg>
 </button>
 <main>
 {nav}
 {body}
 </main>
+<footer class="footer">
+  <p>浮生</p>
+</footer>
+<button id="back-to-top" title="回到顶部">&uarr;</button>
 <script src="{base}theme.js"></script>
 </body>
 </html>"""
@@ -145,6 +173,38 @@ THEME_JS = """(function() {
     const next = getTheme() === 'dark' ? 'light' : 'dark';
     localStorage.setItem('theme', next);
     applyTheme(next);
+  });
+})();
+(function() {
+  var bar = document.getElementById('reading-progress');
+  if (!bar) return;
+  var ticking = false;
+  window.addEventListener('scroll', function() {
+    if (!ticking) {
+      requestAnimationFrame(function() {
+        var h = document.documentElement.scrollHeight - window.innerHeight;
+        bar.style.width = h > 0 ? Math.min((window.scrollY / h) * 100, 100) + '%' : '0%';
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+})();
+(function() {
+  var btn = document.getElementById('back-to-top');
+  if (!btn) return;
+  var ticking = false;
+  window.addEventListener('scroll', function() {
+    if (!ticking) {
+      requestAnimationFrame(function() {
+        btn.classList.toggle('visible', window.scrollY > 400);
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+  btn.addEventListener('click', function() {
+    window.scrollTo({top: 0, behavior: 'smooth'});
   });
 })();
 """
@@ -361,7 +421,8 @@ def build():
 
     # 2. 首页
     body = f'''<h1 class="home-title">{novel_title}</h1>
-<p class="home-sub">律</p>
+<p class="home-sub">——律</p>
+
 <div class="btn-group">
   <a href="chapters.html" class="btn primary">正文</a>
   <a href="settings.html" class="btn">设定集</a>
