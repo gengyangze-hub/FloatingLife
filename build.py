@@ -15,6 +15,18 @@ DOCS = BASE / "docs"
 # ── HTML 模板 ──────────────────────────────────────────────
 
 CSS = r"""
+@font-face {
+  font-family: 'Noto Sans Runic';
+  src: url('fonts/NotoSansRunic.woff2') format('woff2');
+  unicode-range: U+16A0-16FF;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Noto Sans Symbols 2';
+  src: url('fonts/NotoSansSymbols2.woff2') format('woff2');
+  unicode-range: U+1F700-1F77F;
+  font-display: swap;
+}
 :root {
   --bg: #fff;
   --text: #000;
@@ -48,7 +60,7 @@ CSS = r"""
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{font-size:17px;line-height:1.75}
 body{
-  font-family:"Noto Serif SC","Source Han Serif SC","Songti SC",Georgia,serif;
+  font-family:"Noto Serif SC","Source Han Serif SC","Songti SC",Georgia,serif,"Noto Sans Runic","Noto Sans Symbols 2";
   background:var(--bg);color:var(--text);
   min-height:100vh;display:flex;flex-direction:column;
 }
@@ -411,7 +423,13 @@ def build():
         body = f'<h2>{s["title"]}</h2>\n<div class="chapter-content">\n{html}\n</div>'
         write_page(f'setting/{s["slug"]}.html', s['title'], SETTING_NAV_TPL, body, base='../')
 
-    # 7. 静态资源（style.css / theme.js）已在上方写出
+    # 7. 复制静态字体文件
+    fonts_src = BASE / "static" / "fonts"
+    fonts_dst = DOCS / "fonts"
+    if fonts_src.is_dir():
+        if fonts_dst.exists():
+            shutil.rmtree(fonts_dst)
+        shutil.copytree(fonts_src, fonts_dst)
 
     print(f'[OK] Generated {len(chapters)} chapters + {len(settings)} settings docs')
     print(f'  Home: docs/index.html')
