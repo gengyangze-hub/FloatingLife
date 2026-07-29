@@ -99,7 +99,7 @@ PAGE_TPL = """<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title} — 浮生</title>
-<style>{css}</style>
+<link rel="stylesheet" href="{base}style.css">
 </head>
 <body>
 <button class="theme-toggle" id="themeToggle" title="切换亮色/暗色模式">
@@ -110,25 +110,32 @@ PAGE_TPL = """<!DOCTYPE html>
 {nav}
 {body}
 </main>
-<script>
-const toggle = document.getElementById('themeToggle');
-function getTheme() {{
-  const saved = localStorage.getItem('theme');
-  if (saved) return saved;
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-}}
-function applyTheme(t) {{
-  document.documentElement.setAttribute('data-theme', t);
-}}
-applyTheme(getTheme());
-toggle.addEventListener('click', () => {{
-  const next = getTheme() === 'dark' ? 'light' : 'dark';
-  localStorage.setItem('theme', next);
-  applyTheme(next);
-}});
-</script>
+<script src="{base}theme.js"></script>
 </body>
 </html>"""
+
+THEME_JS = """(function() {
+  const toggle = document.getElementById('themeToggle');
+  if (!toggle) return;
+
+  function getTheme() {
+    const saved = localStorage.getItem('theme');
+    if (saved) return saved;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+  }
+
+  applyTheme(getTheme());
+
+  toggle.addEventListener('click', function() {
+    const next = getTheme() === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('theme', next);
+    applyTheme(next);
+  });
+})();
+"""
 
 HOME_NAV = ""
 
@@ -320,17 +327,21 @@ def parse_settings():
 
 # ── 页面生成 ────────────────────────────────────────────────
 
-def write_page(rel_path, title, nav, body):
+def write_page(rel_path, title, nav, body, base=''):
     path = DOCS / rel_path
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
-        PAGE_TPL.format(title=title, css=CSS, nav=nav, body=body),
+        PAGE_TPL.format(title=title, base=base, nav=nav, body=body),
         encoding='utf-8'
     )
 
 
 def build():
     DOCS.mkdir(exist_ok=True)
+
+    # 写出共享的 CSS 和 JS 文件
+    (DOCS / 'style.css').write_text(CSS, encoding='utf-8')
+    (DOCS / 'theme.js').write_text(THEME_JS, encoding='utf-8')
 
     # 1. 解析数据
     chapters, novel_title = parse_chapters()
@@ -377,7 +388,7 @@ def build():
 {ch["html"]}
 </div>
 <div class="chapter-nav">{nav_links}</div>'''
-        write_page(f'chapter/{ch["num"]}.html', f'{ch["num"]} {ch["title"]}', CHAPTER_NAV_TPL, body)
+        write_page(f'chapter/{ch["num"]}.html', f'{ch["num"]} {ch["title"]}', CHAPTER_NAV_TPL, body, base='../')
 
     # 5. 设定集列表页
     setting_items = []
@@ -398,10 +409,9 @@ def build():
         content = lines[1].strip() if len(lines) > 1 else raw
         html = md_to_html(content)
         body = f'<h2>{s["title"]}</h2>\n<div class="chapter-content">\n{html}\n</div>'
-        write_page(f'setting/{s["slug"]}.html', s['title'], SETTING_NAV_TPL, body)
+        write_page(f'setting/{s["slug"]}.html', s['title'], SETTING_NAV_TPL, body, base='../')
 
-    # 7. 复制静态资源（如果有）
-    # 目前所有 CSS 内嵌，无需额外资源
+    # 7. 静态资源（style.css / theme.js）已在上方写出
 
     print(f'[OK] Generated {len(chapters)} chapters + {len(settings)} settings docs')
     print(f'  Home: docs/index.html')
