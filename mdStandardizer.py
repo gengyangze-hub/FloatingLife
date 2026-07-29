@@ -153,7 +153,13 @@ def process_file(filepath):
     content = content.replace('COMMENTS_PLACEHOLDER_START', '/*')
     content = content.replace('COMMENTS_PLACEHOLDER_END', '*/')
 
-    # 步骤6：处理空行标准化
+    # 步骤6：对下划线转义
+    content = content.replace('\\_', '_')
+    content = re.sub(r'(?<!_)_(?!_)', 'SINGLE-UNDERSCORE-PLACEHOLDER', content)
+    content = content.replace('_', '\\_')
+    content = content.replace('SINGLE-UNDERSCORE-PLACEHOLDER', '_')
+
+    # 步骤7：处理空行标准化
     content = re.sub(r' +\n', '\n', content)
     content = re.sub(r'\n +', '\n', content)
     while re.search(r'\n\n\n\n', content):
