@@ -27,33 +27,41 @@ CSS = r"""
   unicode-range: U+1F700-1F77F;
   font-display: swap;
 }
+/* ===== 浅色：摩卡×雾绿 ===== */
 :root {
-  --bg: #fff;
-  --text: #1a1a1a;
-  --muted: #6b7280;
-  --accent: #000;
-  --chroma: #5b8c9e;
-  --chroma-dim: #8ab4c4;
-  --chroma-bg: #f0f5f7;
-  --border: #d1d5db;
-  --card-bg: #fff;
-  --hover: #f3f4f6;
+  --bg: #efe8e0;
+  --bg2: #e0e7df;
+  --text: #473c32;
+  --muted: #a2937f;
+  --accent: #7e9081;
+  --chroma: #7e9081;
+  --chroma-dim: #a3b5a6;
+  --chroma-bg: rgba(126,144,129,.10);
+  --border: rgba(90,70,50,.14);
+  --card-bg: #faf6f0;
+  --hover: rgba(126,144,129,.12);
   --max-w: 720px;
-  --reading-bar: #5b8c9e;
+  --reading-bar: #7e9081;
 }
+/* ===== 深色：墨黑 ===== */
 [data-theme="dark"] {
-  --bg: #0d1117;
-  --text: #e6edf3;
-  --muted: #7d8590;
-  --accent: #fff;
-  --chroma: #8ab4c4;
-  --chroma-dim: #5b8c9e;
-  --chroma-bg: #161b22;
-  --border: #30363d;
-  --card-bg: #161b22;
-  --hover: #1c2128;
-  --reading-bar: #8ab4c4;
+  --bg: #121214;
+  --bg2: #1c1c20;
+  --text: #e9e6e0;
+  --muted: #8f8a83;
+  --accent: #c9c0b1;
+  --chroma: #c9c0b1;
+  --chroma-dim: #a09888;
+  --chroma-bg: rgba(255,255,255,.05);
+  --border: rgba(255,255,255,.10);
+  --card-bg: #1c1c20;
+  --hover: rgba(255,255,255,.06);
+  --reading-bar: #c9c0b1;
 }
+/* ===== 字体切换 ===== */
+:root { --reader-font: "Noto Serif SC","Source Han Serif SC","Songti SC","SimSun","宋体",serif; }
+[data-font="kaiti"] { --reader-font: "KaiTi","STKaiti","楷体",serif; }
+[data-font="heiti"] { --reader-font: "PingFang SC","Microsoft YaHei","SimHei","黑体",sans-serif; }
 .theme-toggle {
   position: fixed;top:1rem;right:1rem;
   background:none;border:1px solid var(--border);cursor:pointer;
@@ -69,10 +77,11 @@ CSS = r"""
 .icon-yinyang .dot-bg{fill:var(--bg)}
 .theme-toggle:hover .icon-yinyang{transform:rotate(180deg)}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{font-size:18px;line-height:1.8}
+html{font-size:18px;line-height:1.8;background:var(--bg)}
 body{
-  font-family:"Noto Serif SC","Source Han Serif SC","Songti SC",Georgia,serif,"Noto Sans Runic","Noto Sans Symbols 2";
-  background:var(--bg);color:var(--text);
+  font-family:var(--reader-font),"Noto Sans Runic","Noto Sans Symbols 2",serif;
+  background:linear-gradient(135deg,var(--bg),var(--bg2));background-attachment:fixed;
+  color:var(--text);
   min-height:100vh;display:flex;flex-direction:column;
   -webkit-font-smoothing:antialiased;
 }
@@ -99,34 +108,88 @@ table{border-collapse:collapse;width:100%;margin:1.2rem 0;font-size:.95rem}
 th,td{border:1px solid var(--border);padding:.5rem .8rem;text-align:left}
 th{background:var(--hover);font-weight:600}
 tr:nth-child(even){background:var(--chroma-bg)}
-nav{display:flex;align-items:center;gap:1rem;margin-bottom:2rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+nav{display:flex;align-items:center;gap:1rem}
 nav a{font-size:.95rem}
 nav .sep{color:var(--muted)}
-.btn-group{display:flex;gap:1.5rem;justify-content:center;margin:3rem 0}
+.top-bar{display:flex;align-items:center;gap:1rem;margin-bottom:2rem;padding-bottom:1rem;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.font-row{display:flex;align-items:center;gap:.5rem}
+.font-row .font-btn{background:none;border:none;font-family:inherit;font-size:.9rem;color:var(--muted);cursor:pointer;padding:0 .15rem;transition:color .2s}
+.font-row .font-btn:hover{color:var(--text)}
+.font-row .font-btn.active{color:var(--accent);font-weight:600}
+.btn-group{display:flex;gap:2rem;justify-content:center;margin:3.5rem 0}
 .btn{
-  display:inline-block;padding:.85rem 0;font-size:1.15rem;width:10rem;
-  border:2px solid var(--chroma);border-radius:8px;color:var(--chroma);
-  background:transparent;cursor:pointer;transition:all .2s;
-  text-align:center;font-family:inherit;
+  display:inline-block;padding:.5rem 1.8rem;font-size:1.05rem;
+  letter-spacing:.12em;color:var(--chroma);background:transparent;
+  cursor:pointer;transition:all .28s ease;text-align:center;
+  font-family:inherit;border:1px solid var(--chroma-dim);text-decoration:none
 }
-.btn:hover{background:var(--chroma);color:#fff;text-decoration:none}
-.btn.primary{background:var(--chroma);border-color:var(--chroma);color:#fff}
-.btn.primary:hover{opacity:.85}
+.btn:hover{color:var(--accent);border-color:var(--accent);background:var(--chroma-bg)}
+.btn.primary{color:var(--accent);border-color:var(--accent);background:var(--chroma-bg)}
+.btn.primary:hover{color:var(--chroma);border-color:var(--chroma);background:transparent}
 .toc-list{list-style:none;margin:0;padding:0}
 .toc-list li{border-bottom:1px solid var(--border)}
 .toc-list a{display:block;padding:.9rem 1rem;font-size:1.1rem;transition:all .15s;border-radius:6px;color:var(--chroma)}
 .toc-list a:hover{background:var(--chroma-bg);text-decoration:none;padding-left:1.3rem}
 .toc-num{display:inline-block;width:2.5rem;color:var(--muted);font-size:.9rem}
-.footer{text-align:center;color:var(--muted);font-size:.82rem;padding:2.5rem 0;border-top:1px solid var(--border);margin-top:3rem}
+.footer{text-align:center;color:var(--muted);font-size:.82rem;padding:2.5rem 0;margin-top:3rem}
 .footer p{margin:0}
 .chapter-content h2{margin-top:0}
 .chapter-nav{display:flex;justify-content:space-between;margin:3rem 0 1rem;padding-top:2rem;border-top:1px solid var(--border)}
 .chapter-nav a{font-size:1rem;color:var(--chroma);transition:color .2s}
 .chapter-nav a:hover{color:var(--accent);text-decoration:none}
-.home-title{font-size:4rem;letter-spacing:.15em;font-weight:900;text-align:center;margin:6rem 0 1rem;position:relative;left:-.5em}
-.home-sub{text-align:center;color:var(--muted);font-size:1.05rem;margin-bottom:.5rem;position:relative;left:1.5em}
+.home-title{font-size:4.2rem;letter-spacing:.18em;font-weight:700;text-align:center;margin:5rem 0 0;line-height:1.2;color:var(--text)}
+.home-sub{text-align:center;color:var(--muted);font-size:.95rem;font-weight:400;letter-spacing:.06em;margin:.5rem 0 0;text-decoration:none;transition:color .2s}
+.home-sub:hover{color:var(--accent)}
+/* 首页散落布局 */
+.home-scatter{position:relative;min-height:70vh;width:100%;overflow:hidden}
+.home-scatter .scatter-el{position:absolute;white-space:nowrap}
+.home-scatter .home-title{font-size:4.2rem;letter-spacing:.18em;font-weight:700;line-height:1.2;color:var(--text);margin:0;text-align:left}
+.home-scatter .home-sub{font-size:.95rem;font-weight:400;letter-spacing:.06em;color:var(--muted);text-decoration:none;margin:0;text-align:left}
+.scatter-btn{font-size:1.05rem;letter-spacing:.12em;color:var(--chroma);text-decoration:none;border-bottom:1px solid var(--chroma-dim);padding:.2rem 0;transition:color .2s,border-color .2s}
+.scatter-btn:hover{color:var(--accent);border-bottom-color:var(--accent)}
 .home-sub-desc{font-size:.9rem;color:var(--chroma-dim);margin-bottom:2.5rem;font-style:italic}
-@media(max-width:600px){html{font-size:16px}main{padding:2rem 1rem}.home-title{font-size:2.5rem;margin:3rem 0 1rem}.btn{width:8rem;font-size:1rem}.btn-group{gap:1rem}.chapter-nav{flex-direction:column;align-items:center;gap:.5rem}}
+
+/* ===== View Transition（主题切换圆盘扩散动画） ===== */
+::view-transition-old(root){animation:none}
+::view-transition-new(root){animation:none}
+
+/* ===== 宽屏左侧竖栏 ===== */
+#side-rail{
+  display:none;
+  position:fixed;left:0;top:0;bottom:0;width:64px;
+  flex-direction:column;align-items:center;padding:1.2rem 0;
+  border-right:1px solid var(--border);
+  background:var(--bg);z-index:100;
+}
+.rail-link{
+  writing-mode:vertical-rl;letter-spacing:.25em;font-size:.82rem;
+  color:var(--muted);text-decoration:none;padding:.4rem .4rem;
+  margin:.1rem 0;border-radius:8px;transition:color .2s,background .2s;
+}
+.rail-link:hover{color:var(--accent);background:var(--hover);text-decoration:none}
+.rail-link.cur{color:var(--accent);font-weight:600}
+.rail-name{writing-mode:vertical-rl;letter-spacing:.4em;font-size:1.05rem;font-weight:700;color:var(--accent);user-select:none;margin-top:.5rem}
+.rail-btn{
+  background:none;border:none;cursor:pointer;font-family:inherit;
+  color:var(--muted);padding:.45rem .4rem;margin:.15rem 0;
+  border-radius:8px;font-size:.82rem;transition:color .2s,background .2s;
+  writing-mode:vertical-rl;letter-spacing:.2em;
+}
+.rail-btn:hover{color:var(--text);background:var(--hover)}
+.rail-btn.active{color:var(--accent);font-weight:600}
+#railBackTop{margin-top:auto;color:var(--muted);cursor:pointer;background:none;border:none;padding:.4rem;border-radius:8px;font-size:1rem;transition:color .2s,transform .2s;line-height:1}
+#railBackTop:hover{color:var(--accent);transform:scale(1.15)}
+.rail-spacer{margin-top:auto}
+.home-fonts{justify-content:center;padding:.6rem 0 0}
+
+@media(max-width:600px){html{font-size:16px}main{padding:2rem 1rem}.home-scatter .home-title{font-size:2.5rem}.home-scatter .home-sub{font-size:.85rem}.scatter-btn{font-size:.95rem}.chapter-nav{flex-direction:column;align-items:center;gap:.5rem}}
+@media(min-width:768px){
+  #side-rail{display:flex}
+  .top-bar,.home-fonts{display:none}
+  #back-to-top{display:none}
+  :root{--max-w:980px}
+  main{padding-left:calc(64px + 1.5rem)}
+}
 """
 
 PAGE_TPL = """<!DOCTYPE html>
@@ -139,75 +202,147 @@ PAGE_TPL = """<!DOCTYPE html>
 </head>
 <body>
 <div id="reading-progress"></div>
+<div id="side-rail">
+  {rail_head}
+  <button class="rail-btn font-btn" data-font="songti">宋</button>
+  <button class="rail-btn font-btn" data-font="kaiti">楷</button>
+  <button class="rail-btn font-btn" data-font="heiti">黑</button>
+  {rail_tail}
+  <div class="rail-name">浮生</div>
+</div>
 <button class="theme-toggle" id="themeToggle" title="切换亮色/暗色模式">
 <svg class="icon-yinyang" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="11"/><path d="M12 1 A11 11 0 0 0 12 23 A5.5 5.5 0 0 1 12 12 A5.5 5.5 0 0 0 12 1" fill="currentColor" stroke="none"/><circle cx="12" cy="6.5" r="2.2" class="dot-bg" stroke="none"/><circle cx="12" cy="17.5" r="2.2" fill="currentColor" stroke="none"/></svg>
 </button>
 <main>
-{nav}
+{top_bar}
 {body}
 </main>
-<footer class="footer">
-  <p>浮生</p>
-</footer>
+{footer}
 <button id="back-to-top" title="回到顶部">&uarr;</button>
 <script src="{base}theme.js"></script>
 </body>
 </html>"""
 
 THEME_JS = """(function() {
-  const toggle = document.getElementById('themeToggle');
-  if (!toggle) return;
-
+  /* ── 主题切换（View Transition 圆盘扩散动画） ── */
   function getTheme() {
-    const saved = localStorage.getItem('theme');
+    var saved = localStorage.getItem('theme');
     if (saved) return saved;
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   }
   function applyTheme(t) {
     document.documentElement.setAttribute('data-theme', t);
   }
-
   applyTheme(getTheme());
 
-  toggle.addEventListener('click', function() {
-    const next = getTheme() === 'dark' ? 'light' : 'dark';
-    localStorage.setItem('theme', next);
-    applyTheme(next);
-  });
-})();
-(function() {
-  var bar = document.getElementById('reading-progress');
-  if (!bar) return;
-  var ticking = false;
-  window.addEventListener('scroll', function() {
-    if (!ticking) {
-      requestAnimationFrame(function() {
-        var h = document.documentElement.scrollHeight - window.innerHeight;
-        bar.style.width = h > 0 ? Math.min((window.scrollY / h) * 100, 100) + '%' : '0%';
-        ticking = false;
+  var toggles = document.querySelectorAll('.theme-toggle');
+  for (var i = 0; i < toggles.length; i++) {
+    toggles[i].addEventListener('click', function(e) {
+      e.stopPropagation();
+      var next = getTheme() === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('theme', next);
+      if (!document.startViewTransition) { applyTheme(next); return; }
+      var vt = document.startViewTransition(function() { applyTheme(next); });
+      vt.ready.then(function() {
+        var x = e.clientX, y = e.clientY;
+        var r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+        document.documentElement.animate(
+          { clipPath: ['circle(0px at ' + x + 'px ' + y + 'px)', 'circle(' + r + 'px at ' + x + 'px ' + y + 'px)'] },
+          { duration: 750, easing: 'cubic-bezier(.22,1,.36,1)', pseudoElement: '::view-transition-new(root)' }
+        );
       });
-      ticking = true;
+    });
+  }
+
+  /* ── 字体切换 ── */
+  function getFont() {
+    try { return localStorage.getItem('fs-font') || 'songti'; } catch(e) { return 'songti'; }
+  }
+  function applyFont(f) {
+    document.documentElement.setAttribute('data-font', f);
+    var btns = document.querySelectorAll('.font-btn');
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].classList.toggle('active', btns[i].dataset.font === f);
     }
-  });
-})();
-(function() {
-  var btn = document.getElementById('back-to-top');
-  if (!btn) return;
-  var ticking = false;
-  window.addEventListener('scroll', function() {
-    if (!ticking) {
-      requestAnimationFrame(function() {
-        btn.classList.toggle('visible', window.scrollY > 400);
-        ticking = false;
-      });
-      ticking = true;
+  }
+  applyFont(getFont());
+  var fontBtns = document.querySelectorAll('.font-btn');
+  for (var i = 0; i < fontBtns.length; i++) {
+    fontBtns[i].addEventListener('click', function() {
+      var f = this.dataset.font;
+      try { localStorage.setItem('fs-font', f); } catch(e) {}
+      applyFont(f);
+    });
+  }
+
+  /* ── 阅读进度条 ── */
+  (function() {
+    var bar = document.getElementById('reading-progress');
+    if (!bar) return;
+    var ticking = false;
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        requestAnimationFrame(function() {
+          var h = document.documentElement.scrollHeight - window.innerHeight;
+          bar.style.width = h > 0 ? Math.min((window.scrollY / h) * 100, 100) + '%' : '0%';
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+  })();
+
+  /* ── 回到顶部（浮动按钮：窄屏可见） ── */
+  (function() {
+    var btn = document.getElementById('back-to-top');
+    if (!btn) return;
+    var ticking = false;
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        requestAnimationFrame(function() {
+          btn.classList.toggle('visible', window.scrollY > 400);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+    btn.addEventListener('click', function() {
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    });
+  })();
+
+  /* ── 回到顶部（竖栏按钮：宽屏可见，始终可点） ── */
+  (function() {
+    var btn = document.getElementById('railBackTop');
+    if (!btn) return;
+    btn.addEventListener('click', function() {
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    });
+  })();
+
+  /* ── 首页散落布局 ── */
+  (function() {
+    var scatter = document.getElementById('homeScatter');
+    if (!scatter) return;
+    var els = scatter.querySelectorAll('.scatter-el');
+    if (els.length !== 4) return;
+    var quads = [
+      { t: [5, 22],  l: [3, 38] },
+      { t: [5, 22],  l: [48, 88] },
+      { t: [42, 72], l: [3, 38] },
+      { t: [42, 72], l: [48, 88] },
+    ];
+    for (var i = quads.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = quads[i]; quads[i] = quads[j]; quads[j] = tmp;
     }
-  });
-  btn.addEventListener('click', function() {
-    window.scrollTo({top: 0, behavior: 'smooth'});
-  });
-})();
-"""
+    for (var i = 0; i < els.length; i++) {
+      var q = quads[i];
+      els[i].style.top  = (q.t[0] + Math.random() * (q.t[1] - q.t[0])) + '%';
+      els[i].style.left = (q.l[0] + Math.random() * (q.l[1] - q.l[0])) + '%';
+    }
+  })();
+})();"""
 
 HOME_NAV = ""
 
@@ -216,6 +351,21 @@ CHAPTER_NAV_TPL = """<nav><a href="../chapters.html">← 目录</a><span class="
 SETTING_NAV_TPL = """<nav><a href="../settings.html">← 设定集</a><span class="sep">|</span><a href="../index.html">首页</a></nav>"""
 
 LIST_NAV = """<nav><a href="index.html">← 首页</a></nav>"""
+
+# Rail & top-bar fragments
+_FONT_BTNS = """<button class="font-btn" data-font="songti">宋体</button>
+  <button class="font-btn" data-font="kaiti">楷体</button>
+  <button class="font-btn" data-font="heiti">黑体</button>"""
+FONT_ROW = f'<div class="font-row">{_FONT_BTNS}</div>'
+
+RAIL_TAIL_BTN = '<button id="railBackTop" title="回到顶部">&uarr;</button>'
+RAIL_TAIL_SPACER = '<span class="rail-spacer"></span>'
+
+def _rail_head(base, toc):
+    return f'<a class="rail-link" href="{base}{toc}">目录</a><a class="rail-link" href="{base}index.html">首页</a>'
+
+def _top_bar(nav):
+    return f'<div class="top-bar">{nav}{FONT_ROW}</div>'
 
 # ── Markdown → HTML ─────────────────────────────────────────
 
@@ -399,11 +549,11 @@ def parse_settings():
 
 # ── 页面生成 ────────────────────────────────────────────────
 
-def write_page(rel_path, title, nav, body, base=''):
+def write_page(rel_path, title, body, base='', *, rail_head='', rail_tail='', top_bar='', footer='<footer class="footer"><p>浮生</p></footer>'):
     path = DOCS / rel_path
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
-        PAGE_TPL.format(title=title, base=base, nav=nav, body=body),
+        PAGE_TPL.format(title=title, base=base, body=body, rail_head=rail_head, rail_tail=rail_tail, top_bar=top_bar, footer=footer),
         encoding='utf-8'
     )
 
@@ -419,15 +569,16 @@ def build():
     chapters, novel_title = parse_chapters()
     settings = parse_settings()
 
-    # 2. 首页
-    body = f'''<h1 class="home-title">{novel_title}</h1>
-<p class="home-sub">——律</p>
-
-<div class="btn-group">
-  <a href="chapters.html" class="btn primary">正文</a>
-  <a href="settings.html" class="btn">设定集</a>
+    # 2. 首页 — 四元素散落布局
+    body = f'''<div class="home-scatter" id="homeScatter">
+  <h1 class="home-title scatter-el">{novel_title}</h1>
+  <a class="home-sub scatter-el" href="https://space.bilibili.com/1410666014" target="_blank" rel="noopener">——律</a>
+  <a href="chapters.html" class="scatter-btn scatter-el">正文</a>
+  <a href="settings.html" class="scatter-btn scatter-el">设定集</a>
 </div>'''
-    write_page('index.html', '首页', HOME_NAV, body)
+    write_page('index.html', '首页', body, base='',
+               rail_head='', rail_tail=RAIL_TAIL_SPACER, footer='',
+               top_bar=f'<div class="font-row home-fonts">{_FONT_BTNS}</div>')
 
     # 3. 章节目录页
     toc_items = []
@@ -438,7 +589,10 @@ def build():
             f'</a></li>'
         )
     body = f'<h1>浮生</h1>\n<ul class="toc-list">\n' + '\n'.join(toc_items) + '\n</ul>'
-    write_page('chapters.html', '浮生', LIST_NAV, body)
+    write_page('chapters.html', '浮生', body, base='',
+               rail_head=_rail_head('', 'chapters.html'),
+               rail_tail=RAIL_TAIL_BTN,
+               top_bar=_top_bar(LIST_NAV))
 
     # 4. 各章节页
     for ch in chapters:
@@ -461,7 +615,10 @@ def build():
 {ch["html"]}
 </div>
 <div class="chapter-nav">{nav_links}</div>'''
-        write_page(f'chapter/{ch["num"]}.html', f'{ch["num"]} {ch["title"]}', CHAPTER_NAV_TPL, body, base='../')
+        write_page(f'chapter/{ch["num"]}.html', f'{ch["num"]} {ch["title"]}', body, base='../',
+                   rail_head=_rail_head('../', 'chapters.html'),
+                   rail_tail=RAIL_TAIL_BTN,
+                   top_bar=_top_bar(CHAPTER_NAV_TPL))
 
     # 5. 设定集列表页
     setting_items = []
@@ -472,7 +629,10 @@ def build():
             f'</a></li>'
         )
     body = f'<h1>设定集</h1>\n<ul class="toc-list">\n' + '\n'.join(setting_items) + '\n</ul>'
-    write_page('settings.html', '设定集', LIST_NAV, body)
+    write_page('settings.html', '设定集', body, base='',
+               rail_head=_rail_head('', 'settings.html'),
+               rail_tail=RAIL_TAIL_BTN,
+               top_bar=_top_bar(LIST_NAV))
 
     # 6. 各设定文档页
     for s in settings:
@@ -482,7 +642,10 @@ def build():
         content = lines[1].strip() if len(lines) > 1 else raw
         html = md_to_html(content)
         body = f'<h2>{s["title"]}</h2>\n<div class="chapter-content">\n{html}\n</div>'
-        write_page(f'setting/{s["slug"]}.html', s['title'], SETTING_NAV_TPL, body, base='../')
+        write_page(f'setting/{s["slug"]}.html', s['title'], body, base='../',
+                   rail_head=_rail_head('../', 'settings.html'),
+                   rail_tail=RAIL_TAIL_BTN,
+                   top_bar=_top_bar(SETTING_NAV_TPL))
 
     # 7. 复制静态字体文件
     fonts_src = BASE / "static" / "fonts"
