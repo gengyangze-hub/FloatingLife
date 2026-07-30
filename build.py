@@ -11,7 +11,7 @@ from pathlib import Path
 
 BASE = Path(__file__).resolve().parent
 NOVEL = BASE / "浮生 · 满梧.md"
-SETTINGS_DIR = BASE / "BgSettings"
+SETTINGS_DIR = BASE / "[WLD] Worldbuilding Bureau"
 DOCS = BASE / "docs"
 
 # ── HTML 模板 ──────────────────────────────────────────────
@@ -589,7 +589,7 @@ def parse_chapters():
 
 
 def parse_settings():
-    """列出 BgSettings/ 下所有 .md 文件"""
+    """列出 [WLD] Worldbuilding Bureau/ 下所有 .md 文件"""
     files = []
     for p in sorted(SETTINGS_DIR.glob('*.md')):
         m = re.match(r'^(\d+)\s+(.+?)\.md$', p.name)
