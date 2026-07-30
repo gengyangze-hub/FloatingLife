@@ -150,6 +150,7 @@ nav .sep{color:var(--muted)}
 .home-nav{display:flex;gap:2.8rem;margin-top:3.2rem;position:relative;z-index:1}
 .home-nav a{font-size:1.05rem;color:var(--muted);text-decoration:none;letter-spacing:.12em;transition:color .3s}
 .home-nav a:hover{color:var(--accent)}
+.home-location{position:fixed;right:1.2rem;bottom:2rem;writing-mode:vertical-rl;font-size:.75rem;color:var(--muted);letter-spacing:.15em;z-index:1;user-select:none;opacity:.55}
 
 /* ── 首页空岛景观（俯瞰线稿） ── */
 .sky-arch{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:min(100vw,138vh,1500px);aspect-ratio:3;z-index:0;pointer-events:none}
@@ -723,6 +724,7 @@ def build():
   </nav>
   <div class="home-fonts">{_HOME_FONT_BTNS}</div>
   {sky}
+  <div class="home-location">因南岛群西部边缘一隅</div>
 </div>'''
     write_page('index.html', '首页', body, base='',
                rail_head=RAIL_HEAD_SPACER, rail_tail=RAIL_TAIL_SPACER, footer='',
