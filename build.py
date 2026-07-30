@@ -3,7 +3,6 @@
 解析正文和设定集 Markdown 文件，生成完整静态站点到 docs/
 """
 import math
-import os
 import random
 import re
 import shutil
@@ -121,16 +120,6 @@ nav .sep{color:var(--muted)}
 .font-row .font-btn{background:none;border:none;font-family:inherit;font-size:.9rem;color:var(--muted);cursor:pointer;padding:0 .15rem;transition:color .2s}
 .font-row .font-btn:hover{color:var(--text)}
 .font-row .font-btn.active{color:var(--accent);font-weight:600}
-.btn-group{display:flex;gap:2rem;justify-content:center;margin:3.5rem 0}
-.btn{
-  display:inline-block;padding:.5rem 1.8rem;font-size:1.05rem;
-  letter-spacing:.12em;color:var(--chroma);background:transparent;
-  cursor:pointer;transition:all .28s ease;text-align:center;
-  font-family:inherit;border:1px solid var(--chroma-dim);text-decoration:none
-}
-.btn:hover{color:var(--accent);border-color:var(--accent);background:var(--chroma-bg)}
-.btn.primary{color:var(--accent);border-color:var(--accent);background:var(--chroma-bg)}
-.btn.primary:hover{color:var(--chroma);border-color:var(--chroma);background:transparent}
 .toc-list{list-style:none;margin:0;padding:0}
 .toc-list li{border-bottom:1px solid var(--border)}
 .toc-list a{display:flex;align-items:baseline;padding:.9rem 1rem;font-size:1.1rem;transition:all .15s;border-radius:6px;color:var(--chroma)}
@@ -430,123 +419,10 @@ def _top_bar(nav):
 
 # ── Markdown → HTML ─────────────────────────────────────────
 
-try:
-    import markdown as md_lib
-    def md_to_html(text):
-        return md_lib.markdown(text, extensions=['fenced_code', 'codehilite', 'tables'])
-except ImportError:
-    # 无 markdown 库时的简易回退
-    def md_to_html(text):
-        return _simple_md(text)
+import markdown as md_lib
 
-def _simple_md(text):
-    """简易 Markdown 转换，不依赖外部库"""
-    lines = text.split('\n')
-    out = []
-    in_code = False
-    in_list = False
-    i = 0
-    while i < len(lines):
-        line = lines[i]
-        # 代码块
-        if line.strip().startswith('```'):
-            if in_code:
-                out.append('</code></pre>')
-                in_code = False
-            else:
-                out.append('<pre><code>')
-                in_code = True
-            i += 1
-            continue
-        if in_code:
-            out.append(_escape(line))
-            out.append('\n')
-            i += 1
-            continue
-
-        stripped = line.strip()
-
-        # 空行
-        if not stripped:
-            if in_list:
-                out.append('</ul>')
-                in_list = False
-            i += 1
-            continue
-
-        # 标题
-        m = re.match(r'^(#{1,6})\s+(.+)$', stripped)
-        if m:
-            if in_list:
-                out.append('</ul>')
-                in_list = False
-            lvl = len(m.group(1))
-            out.append(f'<h{lvl}>{m.group(2)}</h{lvl}>')
-            i += 1
-            continue
-
-        # 块引用
-        if stripped.startswith('> '):
-            if in_list:
-                out.append('</ul>')
-                in_list = False
-            out.append(f'<blockquote>{_inline(stripped[2:])}</blockquote>')
-            i += 1
-            continue
-
-        # 无序列表
-        m = re.match(r'^-\s+(.+)$', stripped)
-        if m:
-            if not in_list:
-                out.append('<ul>')
-                in_list = True
-            out.append(f'<li>{_inline(m.group(1))}</li>')
-            i += 1
-            continue
-
-        if in_list:
-            out.append('</ul>')
-            in_list = False
-
-        # 水平线
-        if stripped in ('---', '***', '___'):
-            out.append('<hr>')
-            i += 1
-            continue
-
-        # 普通段落
-        out.append(f'<p>{_inline(stripped)}</p>')
-        i += 1
-
-    if in_code:
-        out.append('</code></pre>')
-    if in_list:
-        out.append('</ul>')
-    return '\n'.join(out)
-
-def _escape(s):
-    return s.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-
-def _inline(s):
-    """行内格式：粗体、斜体、行内代码、链接"""
-    # 行内代码（保护）
-    codes = []
-    def save_code(m):
-        codes.append(m.group(1))
-        return f'\x00CODE{len(codes)-1}\x00'
-    s = re.sub(r'`([^`]+)`', save_code, s)
-    # 粗体+斜体
-    s = re.sub(r'\*\*\*(.+?)\*\*\*', r'<strong><em>\1</em></strong>', s)
-    # 粗体
-    s = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', s)
-    # 斜体
-    s = re.sub(r'\*(.+?)\*', r'<em>\1</em>', s)
-    # 链接
-    s = re.sub(r'\[([^\]]+)\]\(([^)]+)\)', r'<a href="\2">\1</a>', s)
-    # 恢复行内代码
-    for idx, c in enumerate(codes):
-        s = s.replace(f'\x00CODE{idx}\x00', f'<code>{_escape(c)}</code>')
-    return s
+def md_to_html(text):
+    return md_lib.markdown(text, extensions=['fenced_code', 'codehilite', 'tables'])
 
 
 # ── 章节解析 ────────────────────────────────────────────────
