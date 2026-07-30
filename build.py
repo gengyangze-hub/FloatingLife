@@ -349,6 +349,42 @@ THEME_JS = """(function() {
     });
   })();
 
+  /* ── 章节导航：用 location.replace 避免返回键在章节间跳转 ── */
+  (function() {
+    var nav = document.querySelector('.chapter-nav');
+    if (!nav) return;
+    nav.addEventListener('click', function(e) {
+      var a = e.target.closest('a[href]');
+      if (!a) return;
+      e.preventDefault();
+      location.replace(a.getAttribute('href'));
+    });
+  })();
+
+  /* ── 正文章节目录（chapters.html）：从站外进入时返回键回到首页 ── */
+  (function() {
+    if (!document.querySelector('.toc-list')) return;
+    if (!/chapters\\.html$/.test(location.pathname)) return;
+    if (document.referrer && document.referrer.indexOf(location.hostname) !== -1) return;
+    history.pushState(null, '', location.href);
+    window.addEventListener('popstate', function onPop() {
+      window.removeEventListener('popstate', onPop);
+      location.replace('index.html');
+    });
+  })();
+
+  /* ── 设定目录（settings.html）：从站外进入时返回键回到首页 ── */
+  (function() {
+    if (!document.querySelector('.toc-list')) return;
+    if (!/settings\\.html$/.test(location.pathname)) return;
+    if (document.referrer && document.referrer.indexOf(location.hostname) !== -1) return;
+    history.pushState(null, '', location.href);
+    window.addEventListener('popstate', function onPop() {
+      window.removeEventListener('popstate', onPop);
+      location.replace('index.html');
+    });
+  })();
+
   /* ── KaTeX 渲染 ── */
   if (typeof renderMathInElement !== 'undefined') {
     renderMathInElement(document.body, {
