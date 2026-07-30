@@ -58,7 +58,7 @@ def copy_to_clipboard(text):
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print('用法: python MakeLLMReadable.py <文件路径>')
+        print('用法: python _tool_prep_llm.py <文件路径>')
         time.sleep(1)
         sys.exit(1)
 
