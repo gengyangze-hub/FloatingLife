@@ -96,6 +96,9 @@ h3{font-size:1.15rem;margin:1.5rem 0 .6rem;font-weight:500;color:var(--chroma)}
 h4{font-size:1.05rem;margin:1.2rem 0 .5rem;font-weight:500}
 p{margin:0 0 .8em;text-align:justify}
 .chapter-content p{text-indent:2em}
+	.chapter-content blockquote p,.chapter-content li,.chapter-content li p{text-indent:0}
+	.chapter-content ol,.chapter-content ul{padding-left:1.5em}
+	.toc-list,.toc-list li{text-indent:0}
 a{color:var(--chroma);text-decoration:none;transition:color .2s}
 a:hover{color:var(--accent);text-decoration:underline}
 code{font-family:"JetBrains Mono","Fira Code",monospace;font-size:.85rem;background:var(--hover);padding:.15em .4em;border-radius:4px;border:1px solid var(--border);color:var(--chroma-dim)}
@@ -130,9 +133,9 @@ nav .sep{color:var(--muted)}
 .btn.primary:hover{color:var(--chroma);border-color:var(--chroma);background:transparent}
 .toc-list{list-style:none;margin:0;padding:0}
 .toc-list li{border-bottom:1px solid var(--border)}
-.toc-list a{display:block;padding:.9rem 1rem;font-size:1.1rem;transition:all .15s;border-radius:6px;color:var(--chroma)}
+.toc-list a{display:flex;align-items:baseline;padding:.9rem 1rem;font-size:1.1rem;transition:all .15s;border-radius:6px;color:var(--chroma)}
 .toc-list a:hover{background:var(--chroma-bg);text-decoration:none;padding-left:1.3rem}
-.toc-num{display:inline-block;width:2.5rem;color:var(--muted);font-size:.9rem}
+.toc-num{flex-shrink:0;width:2.5rem;color:var(--muted);font-size:.9rem}
 .footer{text-align:center;color:var(--muted);font-size:.82rem;padding:2.5rem 0;margin-top:3rem}
 .footer p{margin:0}
 .chapter-content h2{margin-top:0}
