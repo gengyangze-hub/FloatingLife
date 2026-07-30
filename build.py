@@ -144,7 +144,7 @@ nav .sep{color:var(--muted)}
 .cursor-dot{position:fixed;width:5px;height:5px;border-radius:50%;background:var(--accent);opacity:.25;pointer-events:none;z-index:0;filter:blur(1px);animation:drift 28s ease-in-out infinite}
 @keyframes drift{0%{top:20%;left:46%}12%{top:17%;left:52%}25%{top:26%;left:49%}37%{top:18%;left:42%}50%{top:24%;left:50%}62%{top:15%;left:47%}75%{top:22%;left:51%}87%{top:19%;left:44%}100%{top:20%;left:46%}}
 @media(prefers-reduced-motion){.cursor-dot{animation:none}}
-.home-title{font-size:5rem;letter-spacing:.24em;font-weight:700;margin:0;line-height:1.1;position:relative;z-index:1;color:var(--muted)}
+.home-title{font-size:5rem;text-align:center;text-indent:.24em;letter-spacing:.24em;font-weight:700;margin:0;line-height:1.1;position:relative;z-index:1;color:var(--muted)}
 .home-sub{font-size:.95rem;color:var(--muted);text-decoration:none;margin-top:.8rem;margin-left:4.5rem;letter-spacing:.08em;transition:color .3s;position:relative;z-index:1}
 .home-sub:hover{color:var(--accent)}
 .home-nav{display:flex;gap:2.8rem;margin-top:3.2rem;position:relative;z-index:1}
@@ -202,7 +202,11 @@ nav .sep{color:var(--muted)}
 #railBackTop{margin-top:auto;color:var(--muted);cursor:pointer;background:none;border:none;padding:.4rem;border-radius:8px;font-size:1rem;transition:color .2s,transform .2s;line-height:1}
 #railBackTop:hover{color:var(--accent);transform:scale(1.15)}
 .rail-spacer{margin-top:auto}
-.home-fonts{justify-content:center;padding:.6rem 0 0}
+.rail-link.ghost{color:var(--bg);pointer-events:none;cursor:default}
+.home-fonts{display:flex;justify-content:center;padding:.6rem 0 0;gap:.3rem}
+.home-fonts .font-btn{background:none;border:none;font-family:inherit;font-size:.85rem;color:var(--muted);cursor:pointer;padding:0 .35rem;transition:color .2s;letter-spacing:.08em}
+.home-fonts .font-btn:hover{color:var(--accent)}
+.home-fonts .font-btn.active{color:var(--accent);font-weight:600}
 
 @media(max-width:600px){html{font-size:16px}main{padding:2rem 1rem}.home-title{font-size:3.2rem}.home-nav{gap:2rem}.chapter-nav{flex-direction:column;align-items:center;gap:.5rem}}
 @media(min-width:768px){
@@ -360,7 +364,7 @@ HOME_NAV = ""
 
 CHAPTER_NAV_TPL = """<nav><a href="../chapters.html">← 目录</a><span class="sep">|</span><a href="../index.html">首页</a></nav>"""
 
-SETTING_NAV_TPL = """<nav><a href="../settings.html">← 设定集</a><span class="sep">|</span><a href="../index.html">首页</a></nav>"""
+SETTING_NAV_TPL = """<nav><a href="../settings.html">← 设定</a><span class="sep">|</span><a href="../index.html">首页</a></nav>"""
 
 LIST_NAV = """<nav><a href="index.html">← 首页</a></nav>"""
 
@@ -368,13 +372,18 @@ LIST_NAV = """<nav><a href="index.html">← 首页</a></nav>"""
 _FONT_BTNS = """<button class="font-btn" data-font="songti">宋体</button>
   <button class="font-btn" data-font="kaiti">楷体</button>
   <button class="font-btn" data-font="heiti">黑体</button>"""
+_HOME_FONT_BTNS = """<button class="font-btn" data-font="songti">宋</button>
+  <button class="font-btn" data-font="kaiti">楷</button>
+  <button class="font-btn" data-font="heiti">黑</button>"""
 FONT_ROW = f'<div class="font-row">{_FONT_BTNS}</div>'
 
 RAIL_TAIL_BTN = '<button id="railBackTop" title="回到顶部">&uarr;</button>'
 RAIL_TAIL_SPACER = '<span class="rail-spacer"></span>'
+RAIL_HEAD_SPACER = '<a class="rail-link ghost">目录</a><a class="rail-link ghost">首页</a>'
 
-def _rail_head(base, toc):
-    return f'<a class="rail-link" href="{base}{toc}">目录</a><a class="rail-link" href="{base}index.html">首页</a>'
+def _rail_head(base, toc, *, ghost_toc=False):
+    cls = 'rail-link ghost' if ghost_toc else 'rail-link'
+    return f'<a class="{cls}" href="{base}{toc}">目录</a><a class="rail-link" href="{base}index.html">首页</a>'
 
 def _top_bar(nav):
     return f'<div class="top-bar">{nav}{FONT_ROW}</div>'
@@ -561,7 +570,7 @@ def parse_settings():
 
 # ── 页面生成 ────────────────────────────────────────────────
 
-def write_page(rel_path, title, body, base='', *, rail_head='', rail_tail='', top_bar='', footer='<footer class="footer"><p>浮生</p></footer>'):
+def write_page(rel_path, title, body, base='', *, rail_head='', rail_tail='', top_bar='', footer=''):
     path = DOCS / rel_path
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
@@ -674,12 +683,13 @@ def build():
   <a class="home-sub" href="https://space.bilibili.com/1410666014" target="_blank" rel="noopener">——律</a>
   <nav class="home-nav">
     <a href="chapters.html">正文</a>
-    <a href="settings.html">设定集</a>
+    <a href="settings.html">设定</a>
   </nav>
+  <div class="home-fonts">{_HOME_FONT_BTNS}</div>
   {sky}
 </div>'''
     write_page('index.html', '首页', body, base='',
-               rail_head='', rail_tail=RAIL_TAIL_SPACER, footer='',
+               rail_head=RAIL_HEAD_SPACER, rail_tail=RAIL_TAIL_SPACER, footer='',
                top_bar='')
 
     # 3. 章节目录页
@@ -692,7 +702,7 @@ def build():
         )
     body = f'<h1>浮生</h1>\n<ul class="toc-list">\n' + '\n'.join(toc_items) + '\n</ul>'
     write_page('chapters.html', '浮生', body, base='',
-               rail_head=_rail_head('', 'chapters.html'),
+               rail_head=_rail_head('', 'chapters.html', ghost_toc=True),
                rail_tail=RAIL_TAIL_BTN,
                top_bar=_top_bar(LIST_NAV))
 
@@ -730,9 +740,9 @@ def build():
             f'<span class="toc-num">{s["num"]}</span>{s["title"]}'
             f'</a></li>'
         )
-    body = f'<h1>设定集</h1>\n<ul class="toc-list">\n' + '\n'.join(setting_items) + '\n</ul>'
-    write_page('settings.html', '设定集', body, base='',
-               rail_head=_rail_head('', 'settings.html'),
+    body = f'<h1>设定</h1>\n<ul class="toc-list">\n' + '\n'.join(setting_items) + '\n</ul>'
+    write_page('settings.html', '设定', body, base='',
+               rail_head=_rail_head('', 'settings.html', ghost_toc=True),
                rail_tail=RAIL_TAIL_BTN,
                top_bar=_top_bar(LIST_NAV))
 
