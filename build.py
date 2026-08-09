@@ -130,7 +130,7 @@ nav .sep{color:var(--muted)}
 .footer{text-align:center;color:var(--muted);font-size:.82rem;padding:2.5rem 0;margin-top:3rem}
 .footer p{margin:0}
 .chapter-content h2{margin-top:0}
-.chapter-nav{display:flex;justify-content:space-between;margin:3rem 0 1rem;padding-top:2rem;border-top:1px solid var(--border)}
+.chapter-nav{display:flex;justify-content:space-between;margin:3rem 0 6rem;padding-top:2rem;border-top:1px solid var(--border)}
 .chapter-nav a{font-size:1rem;color:var(--chroma);transition:color .2s}
 .chapter-nav a:hover{color:var(--accent);text-decoration:none}
 /* ── 首页：居中极简 ── */
