@@ -486,7 +486,15 @@ def parse_settings():
                 'slug': str(p.stem),
                 'path': str(p),
             })
-    files.sort(key=lambda f: f['num'])
+        else:
+            # 非标准文件名：序号用 ^，标题用文件名 stem
+            files.append({
+                'num': '^',
+                'title': p.stem,
+                'slug': str(p.stem),
+                'path': str(p),
+            })
+    files.sort(key=lambda f: (0 if isinstance(f['num'], int) else 1, f['num'] if isinstance(f['num'], int) else 0, f['title']))
     return files
 
 
