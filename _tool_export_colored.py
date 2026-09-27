@@ -9,10 +9,9 @@ markdown-it(html:true) → sanitizeRawHtml → Chromium，原生 HTML 原样透�
 `<span style>` 完整保留，颜色于是能进 PDF。这也是唯一可行路径——markdown-pdf 没有
 markdown-it 插件钩子，而 markdown-pdf.styles 是纯 CSS，无法对正则子串上色。
 
-每个 X.md 在同目录生成 X_colored.md（原文件只读，不改动）：用 VS Code 打开副本，执行
-`Markdown PDF: Export (pdf)` 即可。副本是派生文件，`*_colored*` 已同时写进 .gitignore 与
-.toolignore——不进 git，也不会被 build.py 或其它读忽略规则的工具扫到（_tool_strip_bom.py
-不读 .toolignore，但它只会无害地去掉 BOM）。
+每个 X.md 在同目录生成 X_colored.md（原文件只读，不改动）：用 VS Code 打开副本，执行 `Markdown PDF: Export (pdf)` 即可。
+副本是派生文件，`*_colored*` 已同时写进 .gitignore 与 .toolignore——不进 git，也不会被 build.py / _tool_fmt_md.py / _tool_fix_chapters.py 扫到。
+本脚本自己**不**读 .toolignore：命令行参数就是白名单，点名即处理，哪怕名字命中 `*_colored*`、`temp*` 这类模式——`[TMP] Drafts/` 里的真实草稿正是被 `temp*` 误伤过的。代价是没有护栏：把 `X_colored.md` 传进来会生成 `X_colored_colored.md`（仍是 gitignore 名，不进库，但纯属垃圾）。`_tool_strip_bom.py` 同样不读，它只会无害地去掉 BOM。
 
 规则表与 extensions/floatinglife-markdown-highlight/main.js 的 RULES 同步，有两处刻意差异：
 1. 去掉引号/书名号（“ ” 「 」 《 》）那条——正文约 630 处对话，全染橙过于醒目；
@@ -30,8 +29,6 @@ import os
 import re
 import sys
 import time
-
-import _lib.toolignore as toolignore
 
 # —— 高亮规则（镜像 main.js 的 RULES；见文件头说明）——
 H3_TAG_RE = re.compile(r'^### .*?(_[^\n]*)$', re.M)   # 组 1 = 从第一个 `_` 起的标签区
@@ -167,9 +164,6 @@ def main():
         sys.exit(1)
 
     for filepath in files:
-        if toolignore.is_ignored(os.path.basename(filepath)):
-            print(f"[{filepath}] 命中忽略规则，跳过。")
-            continue
         process_file(filepath)
 
     print("All files processed.")
