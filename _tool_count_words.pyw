@@ -1,20 +1,33 @@
 import tkinter as tk
 import re
+import sys
 
 # ── 颜色（黑白极简）─────────────────────────────────────────────────────────
 BG        = "#000000"   # 纯黑背景
 SURFACE   = "#0f0f0f"   # 卡片背景
 BORDER    = "#2a2a2a"   # 边框
 TEXT_MAIN = "#b1b1b1"   # 主文字
-TEXT_DIM  = "#b1b1b1"   # 暗灰次要文字
+TEXT_DIM  = "#b1b1b1"   # 次要文字（当前与 TEXT_MAIN 同色）
 ACCENT    = "#ffffff"   # 强调（白）
-ACCENT2   = "#d6d6d6"   # 弱强调（浅灰，用于标准字数）
 INPUT_BG  = "#0a0a0a"   # 输入框背景
 CURSOR    = "#ffffff"   # 光标
 SEL_BG    = "#333333"   # 选中背景
 
 
+def strip_markup(text: str) -> str:
+    """剥掉不该计入字数的标记。
+
+    只处理四类：作者注、HTML 标签、标题行的 # 与章节序号、零宽空格。
+    `*斜体*` 的星号、表格 `|`、列表 `-` 都当正文内容保留。
+    """
+    text = re.sub(r'/\*.*?\*/', '', text, flags=re.S)          # 作者注可跨行；build.py 的 strip_comments() 也会删
+    text = re.sub(r'<[^>]+>', '', text)                        # <br/> <br> <u> </u> 等
+    text = re.sub(r'^#{1,6}\s+\d*\s*', '', text, flags=re.M)   # 标题行的 # 与章节序号，标题文字保留
+    return text.replace(chr(0x200b), '')                     # _tool_fmt_md.py 插在 * 内侧的零宽空格
+
+
 def count_stats(text: str) -> dict:
+    text          = strip_markup(text)
     no_space      = re.sub(r'\s', '', text)
     char_count    = len(no_space)
 
@@ -22,9 +35,13 @@ def count_stats(text: str) -> dict:
         r'[\u4e00-\u9fff\u3400-\u4dbf\U00020000-\U0002a6df]', text)
     hanzi_count   = len(hanzi)
 
+    # 逐个区间列举，跳过夹在里面的非标点码位：全角空格 U+3000、全角字母数字
+    # U+FF10-19/21-3A/41-5A、々〆 之类符号、〡-〩 中文数字。
+    # 早先整段收 U+FF00-FFEF，会把全角字母数字一并当成标点。
     cn_punct      = re.findall(
-        r'[\u3000-\u303f\uff00-\uffef'
-        r'\u2018\u2019\u201c\u201d\u2014\u2026\u00b7\u300a\u300b\u3008\u3009]',
+        r'[\u3001-\u3003\u3008-\u3011\u3014-\u301f'
+        r'\uff01-\uff0f\uff1a-\uff20\uff3b-\uff40\uff5b-\uff65'
+        r'\u2013\u2014\u2018\u2019\u201c\u201d\u2026\u22ef\u00b7\u30fb]',
         text)
     cn_punct_count = len(cn_punct)
 
@@ -45,10 +62,20 @@ def count_stats(text: str) -> dict:
     }
 
 
+def load_file(path: str):
+    """读文件内容（utf-8-sig，兼容 BOM）；失败打印错误并返回 None。"""
+    try:
+        with open(path, 'r', encoding='utf-8-sig') as f:
+            return f.read()
+    except OSError as e:
+        print(f"无法读取 {path}: {e}", file=sys.stderr)
+        return None
+
+
 class WordCounter(tk.Tk):
     WIN_W, WIN_H = 600, 350
 
-    def __init__(self):
+    def __init__(self, initial_text=None):
         super().__init__()
         self.title("Word Counter")
         self.configure(bg=BG)
@@ -67,6 +94,9 @@ class WordCounter(tk.Tk):
         self.text_box.bind("<FocusOut>", self._refocus)
 
         self.bind("<Escape>", self._on_escape)
+
+        if initial_text:
+            self._load_text(initial_text)
 
     # ── UI ───────────────────────────────────────────────────────────────────
 
@@ -131,7 +161,7 @@ class WordCounter(tk.Tk):
             ("hanzi",       "汉字（无标点）",  TEXT_MAIN),
             ("hanzi_punct", "汉字（含标点）",    TEXT_MAIN),
             ("en_words",    "西文词数",          TEXT_MAIN),
-            ("standard",    "标准字数",          ACCENT),
+            ("standard",    "含标点字数",        ACCENT),
         ]
 
         self._stat_vars = {}
@@ -171,6 +201,14 @@ class WordCounter(tk.Tk):
         for key, var in self._stat_vars.items():
             var.set(str(stats[key]))
 
+    def _load_text(self, text: str):
+        """把文本填进输入框并清掉占位状态（供命令行/拖放传入文件时用）。"""
+        self.text_box.delete("1.0", "end")
+        self.text_box.insert("1.0", text)
+        self.text_box.config(fg=TEXT_MAIN)
+        self._ph_active = False
+        self._update_stats()
+
     def _on_escape(self, event=None):
         if self._get_text().strip():
             self.text_box.delete("1.0", "end")
@@ -191,6 +229,34 @@ class WordCounter(tk.Tk):
             self._ph_active = False
 
 
+def main():
+    if sys.stdout is None:
+        # pythonw 双击 / 拖放文件启动：无控制台 → GUI；给了文件就填进输入框
+        path = sys.argv[1] if len(sys.argv) > 1 else None
+        app = WordCounter(initial_text=load_file(path) if path else None)
+        app.mainloop()
+        return
+
+    # 控制台启动：CLI 模式，必须给文件
+    if len(sys.argv) < 2:
+        print('用法：python _tool_count_words.pyw <文件.md>')
+        sys.exit(1)
+
+    text = load_file(sys.argv[1])
+    if text is None:
+        sys.exit(1)
+
+    stats = count_stats(text)
+    for label, key in [
+        ("字符数",        "char"),
+        ("汉字（无标点）", "hanzi"),
+        ("汉字（含标点）", "hanzi_punct"),
+        ("西文词数",      "en_words"),
+        ("含标点字数",    "standard"),
+    ]:
+        print(f"{label}: {stats[key]}")
+    sys.exit(0)
+
+
 if __name__ == "__main__":
-    app = WordCounter()
-    app.mainloop()
+    main()

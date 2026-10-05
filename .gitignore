@@ -1,6 +1,8 @@
-*_Original.md
+*_Original*
+*_colored*
 temp*
-*_LLM.md
+*_LLM*
 docs/
 __pycache__/
 *.pyc
+.claude/
